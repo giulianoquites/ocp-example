@@ -20,33 +20,26 @@ spec:
         spec:
           containers:
           - command:
-            - sh
+            - /bin/sh
             - -c
-            - oc
-            - login
-            - https://console.gquites.local:8443
-            - --insecure-skip-tls-verify
-            - -u
-            - admin
-            - -p
-            - redhat..123 && oc scale dc/httpd-ex --replicas=5 -n perf-test
+            - export HOME=/tmp && oc login https://console.gquites.local:8443 --insecure-skip-tls-verify
+              -u admin -p redhat..123 && oc scale dc/httpd-ex --replicas=5 -n perf-test
             image: registry.access.redhat.com/openshift3/ose-cli
             imagePullPolicy: Always
             name: scale-pod
             resources: {}
             terminationMessagePath: /dev/termination-log
             terminationMessagePolicy: File
-          env:
-            - name: KUBECONFIG
-              valueFrom:
-                secretKeyRef:
-                  name: kubeconfig
-                  key: /tmp/.kube
           dnsPolicy: ClusterFirst
           restartPolicy: OnFailure
           schedulerName: default-scheduler
           securityContext: {}
           terminationGracePeriodSeconds: 30
+  schedule: '*/2 * * * *'
+  successfulJobsHistoryLimit: 3
+  suspend: false
+
+
 # ┌───────────── minute (0 - 59)
 # │ ┌───────────── hour (0 - 23)
 # │ │ ┌───────────── day of the month (1 - 31)
@@ -56,7 +49,5 @@ spec:
 # │ │ │ │ │
 # │ │ │ │ │
 # * * * * * <command to execute>
-  schedule: '*/2 * * * *'
-  successfulJobsHistoryLimit: 3
-  suspend: false
+
 
