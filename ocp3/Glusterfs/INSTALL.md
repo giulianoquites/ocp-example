@@ -1,4 +1,4 @@
-Glusterfs + OpenShift 3.11 
+GlusterFS + OpenShift 3.11 
 =================
 
 ### Correct way to turn OFF and turn OM each GlusterFS node
