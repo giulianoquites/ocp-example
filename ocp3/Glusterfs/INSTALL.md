@@ -983,6 +983,6 @@ oc adm policy add-cluster-role-to-user cluster-reader system:serviceaccount:open
 
 ~~~~
 
-### Import grafana [DashBord](https://github.com/giulianoquites/Code/blob/master/Openshift/OCP3/Glusterfs/Grafana_Dashboard/Storage-Glusterfs.json)
+### Import grafana [DashBoard](https://github.com/giulianoquites/Code/blob/master/Openshift/OCP3/Glusterfs/Grafana_Dashboard/Storage-Glusterfs.json)
 
 ![](imagens/002.png)
