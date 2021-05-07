@@ -1,0 +1,44 @@
+---
+- name: Instalação e Configuração do Docker Storage
+  hosts: all 
+
+  vars:
+    docker_version: 1.13.1
+    docker_storage_disk: xvdb
+
+  tasks:
+    - name: Instalação do Docker
+      yum:
+        name: "docker-{{ docker_version }}"
+        state: present
+      register: rpm_install
+      async: 500
+      poll: 0
+
+    - name: Aguardando pela instalação do docker
+      async_status:
+        jid: "{{ rpm_install.ansible_job_id }}"
+      become: yes
+      register: jobs
+      until: jobs.finished
+      retries: 50
+      delay: 10
+
+    - name: Configurando o docker-storage-setup
+      copy:
+        content: |
+          DEVS=/dev/{{ docker_storage_disk }}
+          VG=docker-vg
+        dest: /etc/sysconfig/docker-storage-setup
+      when: jobs.finished
+
+    - name: Executando o docker-storage-setup
+      command: docker-storage-setup
+      when: jobs.finished
+
+    - name: Iniciando o serviço Docker
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+      when: jobs.finished
