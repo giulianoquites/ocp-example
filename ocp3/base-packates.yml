@@ -1,0 +1,62 @@
+---
+- name: Instalação e Configuração dos Pacotes Base
+  hosts: all 
+
+  vars:
+    base_packages:
+      - vim
+      - wget 
+      - git 
+      - net-tools 
+      - bind-utils 
+      - yum-utils 
+      - iptables-services 
+      - bridge-utils 
+      - bash-completion 
+      - kexec-tools 
+      - sos 
+      - psacct
+
+  tasks:
+    - name: Instalando os pacotes necessários
+      package:
+        name: "{{ base_packages }}"
+        state: installed
+      register: result
+      until: result is success
+      retries: 3
+
+    - name: Atualizando todos os pacotes
+      yum:
+        name: "*"
+        state: latest
+      register: update
+      async: 500
+      poll: 0
+
+    - name: Aguardando pela atualização dos pacotes
+      async_status:
+        jid: "{{ update.ansible_job_id }}"
+      become: yes
+      register: jobs
+      until: jobs.finished
+      retries: 50
+      delay: 20
+
+    - name: Reiniciando os hosts
+      tags: reboot
+      become: yes
+      become_user: root
+      shell: "sleep 5 && reboot"
+      async: 1
+      poll: 0
+
+    - name: Aguardando pelo reboot e inicialização dos hosts
+      wait_for_connection:
+        connect_timeout: 10
+        sleep: 5
+        delay: 5
+        timeout: 300
+
+    - name: Testa a conexão dos hosts
+      ping:
