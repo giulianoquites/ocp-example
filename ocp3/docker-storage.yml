@@ -29,6 +29,7 @@
         content: |
           DEVS=/dev/{{ docker_storage_disk }}
           VG=docker-vg
+          STORAGE_DRIVER=overlay2
         dest: /etc/sysconfig/docker-storage-setup
       when: jobs.finished
 
