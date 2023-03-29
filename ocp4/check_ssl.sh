@@ -10,4 +10,3 @@ current_date_epoch=$(date +%s)
 days_left=$(( (expire_date_epoch - current_date_epoch)/(3600*24) ))
 echo "$days_left"
 
-openssl req -x509 -nodes -days ${dayscert} -newkey rsa:${bit} -keyout ${dircrt}/${domain}-${year}.key -out ${dirkey}/${domain}-${year}.crt
