@@ -1,0 +1,53 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  labels:
+    parent: cronjobpi
+  name: scale-pod
+  namespace: perf-test
+spec:
+  concurrencyPolicy: Allow
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            parent: cronjobpi
+        spec:
+          containers:
+          - command:
+            - /bin/sh
+            - -c
+            - export HOME=/tmp && oc login https://console.gquites.local:8443 --insecure-skip-tls-verify
+              -u admin -p redhat..123 && oc scale dc/httpd-ex --replicas=5 -n perf-test
+            image: registry.access.redhat.com/openshift4/ose-cli
+            imagePullPolicy: Always
+            name: scale-pod
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: OnFailure
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+  schedule: '*/2 * * * *'
+  successfulJobsHistoryLimit: 3
+  suspend: false
+
+
+# ┌───────────── minute (0 - 59)
+# │ ┌───────────── hour (0 - 23)
+# │ │ ┌───────────── day of the month (1 - 31)
+# │ │ │ ┌───────────── month (1 - 12)
+# │ │ │ │ ┌───────────── day of the week (0 - 6) (Sunday to Saturday;
+# │ │ │ │ │                                   7 is also Sunday on some systems)
+# │ │ │ │ │
+# │ │ │ │ │
+# * * * * * <command to execute>
+
+
