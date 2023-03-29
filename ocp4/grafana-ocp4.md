@@ -3,7 +3,7 @@ oc new-project grafana-monitoring
 ```
 
 ```
-oc get secrets grafana-datasources -n openshift-monitoring --export -o yaml > grafana-datasources.yaml 
+oc get secrets grafana-datasources -n openshift-monitoring -o yaml > grafana-datasources.yaml 
 ```
 
 ```
